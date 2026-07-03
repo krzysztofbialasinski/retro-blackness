@@ -1,0 +1,5 @@
+std = "luau"
+
+[lints]
+mixed_table = "warn"
+unused_variable = "warn"
