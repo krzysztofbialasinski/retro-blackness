@@ -16,8 +16,8 @@ testing.describe("infrastructure/roblox_api open cloud client")
 -- never collides with the next bind.
 local function withStub(port: number, run: (baseUrl: string) -> ())
 	local handle = net.serve(port, function(request: any)
-		if string.find(request.path, "/users/1") ~= nil then
-			return { status = 200, body = '{"id":1,"name":"neo","displayName":"Neo"}' }
+		if string.find(request.path, "/cloud/v2/users/1") ~= nil then
+			return { status = 200, body = '{"id":"1","name":"neo","displayName":"Neo"}' }
 		end
 		return { status = 404, body = "not found" }
 	end)
