@@ -5,12 +5,13 @@ local serde = require("@lune/serde")
 
 local handleUserJoined = require("../../application/roblox/commands/handle_user_joined")
 local httpRouter = require("../http/router")
-local signatureVerifier = require("../../infrastructure/webhooks/signature_verifier")
+local ports = require("../../application/roblox/ports")
+local schemas = require("./schemas")
 
 local robloxWebhookRouter = {}
 
 function robloxWebhookRouter.new(
-	verifier: signatureVerifier.SignatureVerifier,
+	verifier: ports.SignatureVerifierPort,
 	useCase: (request: handleUserJoined.Request) -> ()
 ): httpRouter.Route
 	local function handle(request: any, _params: { string }): httpRouter.RouteResult
@@ -19,7 +20,7 @@ function robloxWebhookRouter.new(
 			return { status = 401, json = { detail = "invalid webhook signature" } }
 		end
 
-		local payload = serde.decode("json", request.body)
+		local payload = serde.decode("json", request.body) :: schemas.UserJoinedWebhookPayload
 		useCase({
 			userId = payload.user_id,
 			universeId = payload.universe_id,
