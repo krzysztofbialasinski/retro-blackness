@@ -1,8 +1,10 @@
 name: CI
 
 on:
+  # No branch filter: gate every PR regardless of target branch. Needed because this repo
+  # currently PRs into an integration branch (feature/convert-to-luau-lune) before that
+  # eventually merges to main -- a main-only filter would let PRs into it skip CI entirely.
   pull_request:
-    branches: [main]
   push:
     branches: [main]
 
@@ -37,6 +39,9 @@ jobs:
 
       - name: File length (max 500 LOC)
         run: lune run scripts/check_file_length.luau
+
+      - name: Architecture boundaries (inward-only dependency rule)
+        run: lune run scripts/check_architecture_boundaries.luau
 
       - name: Tests (full regression suite)
         run: lune run scripts/run_tests.luau

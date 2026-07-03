@@ -62,10 +62,17 @@ the same way rather than growing an existing one.
    remove the gate.
 3. **`domain/` never requires `application/`, `infrastructure/`, or `interfaces/`.**
    `application/` never requires `infrastructure/` or `interfaces/`. `domain/` and `application/`
-   stay free of `@lune/*`.
+   stay free of `@lune/*`. Enforced by `scripts/check_architecture_boundaries.luau` (CI + local
+   hook) — a static, path-based check of `require(...)` targets, no automated linter can express
+   this for Luau.
 4. All outbound dependencies (HTTP, storage, queues) go through a port in
    `application/<context>/ports.luau` with a concrete adapter in `infrastructure/`. Never call
-   `@lune/net` etc. directly from `application/` or `interfaces/`.
+   `@lune/net` etc. directly from `application/` or `interfaces/`. **Every infrastructure
+   adapter's constructor returns its port type**, never a type of its own (e.g.
+   `signatureVerifier.new(secret): ports.SignatureVerifierPort`, not a locally-declared
+   `SignatureVerifier` type) — this is what lets `interfaces/`/`application/` code depend on the
+   port without ever requiring the concrete adapter module. Not automated (would need
+   per-adapter special-casing for the composition root); check for it in review.
 5. Business rules and validation live in `domain/` or `application/`, never in routers or adapters.
 6. Every module is `--!strict` and passes `luau-lsp analyze --platform=standard`.
 7. New behavior needs a test at the right level (see Testing).
@@ -99,12 +106,27 @@ the same way rather than growing an existing one.
   3. Implement; keep commits scoped.
   4. Run the full local gate (see Commands) — all green before opening a PR.
   5. Push and open a PR against `main`.
-- **After a PR is merged, sync local `main`:** `git checkout main && git pull --ff-only origin main`,
-  then delete the merged branch.
+  6. When CI is green, merge the PR and clean up (next two bullets).
+- **Claude owns the whole PR lifecycle, end to end.** Opening the PR, watching CI, merging once
+  green, syncing `main`, and deleting merged branches are all Claude's job by default — never
+  stop halfway and leave merging or cleanup to the user, unless they explicitly ask to take over
+  a given step.
+- **Leave it clean: work is not "done" until it is merged into `main` and the branch is gone.**
+  When a piece of work is finished, its PR gets merged into `main` — finished work must never sit
+  indefinitely on an unmerged branch. Immediately after the merge:
+  1. `git checkout main && git pull --ff-only origin main`
+  2. Delete the merged branch locally (`git branch -d <slug>`) and on the remote
+     (`git push origin --delete <slug>`).
+  3. Verify order: `git branch --no-merged main` must list only branches with genuinely
+     in-flight work — anything else is a leftover to merge or delete.
+- Never stack new work on an unmerged branch — always branch from a freshly pulled `main`.
 - Do not force-push to `main`. Do not merge a PR with failing CI.
 
 ## Working agreement with Claude
 
+- **Describe new work in [`project_description.md`](project_description.md).** That file is the
+  intake point for plain-language, business-facing requests — what you want and why, not
+  technical detail. Claude turns it into an implementation plan per the rule below.
 - **Plan first, code second.** For anything beyond a trivial one-line fix, present an
   implementation plan (scope, files, approach, trade-offs) and wait for explicit approval before
   writing code. Plain-language descriptions of the desired behavior/bug are sufficient input.
@@ -134,6 +156,7 @@ lune run scripts/run_tests.luau        # full regression suite (unit + integrati
 lune run scripts/check_coverage.luau   # coverage gate (>= 80% over domain + application)
 lune run scripts/check_complexity.luau # complexity gate (<= 10, heuristic)
 lune run scripts/check_file_length.luau# file length gate (<= 500)
+lune run scripts/check_architecture_boundaries.luau  # inward-only dependency rule (hard rule #3)
 stylua --check src tests scripts       # format check   (stylua src tests scripts to fix)
 selene src tests scripts               # lint
 luau-lsp analyze --platform=standard src tests scripts   # strict type check
