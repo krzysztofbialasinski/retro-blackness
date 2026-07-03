@@ -1,78 +1,54 @@
-# Opis projektu / zgłoszenie zmiany
+# Napisz tutaj, co chcesz zrobić
 
-Ten plik to punkt wejścia dla nowych zadań: opisz tu, językiem biznesowym, co chcesz żeby
-powstało lub się zmieniło. Nie musisz pisać w kategoriach technicznych/architektonicznych —
-zgodnie z zasadą "Plan first, code second" z `CLAUDE.md` (sekcja "Working agreement with
-Claude"), Claude zamienia taki opis w plan implementacji i przedstawia go do akceptacji, zanim
-zacznie pisać kod.
+Ten plik jest po to, żebyś opisał/a tutaj — swoimi słowami, jak byś tłumaczył/a koledze — co
+chcesz, żeby powstało albo się zmieniło w tej grze/projekcie. Nie musisz umieć programować ani
+pisać niczego "po informatycznemu".
 
-Jeśli czegoś tu zabraknie albo coś będzie niejednoznaczne, Claude zapyta zamiast zgadywać
-(zasada "Never improvise on missing knowledge" z `CLAUDE.md`) — nie trzeba więc doprecyzowywać
-wszystkiego na zapas. Im więcej pól poniżej jest wypełnionych, tym mniej pytań będzie na starcie,
-ale żadne pole nie jest obowiązkowe.
+**Jak to działa:**
 
----
+1. Piszesz na dole, w sekcji "Moje zadanie", co chcesz zrobić.
+2. Claude to czyta i najpierw pokazuje Ci **plan** — co dokładnie zrobi, krok po kroku — zanim
+   napisze jakikolwiek kod.
+3. Jak plan Ci pasuje, mówisz "ok" i Claude bierze się do roboty.
+4. Jeśli czegoś nie napiszesz albo coś będzie niejasne, Claude po prostu Cię o to zapyta —
+   nie zgaduje. Nie musisz więc wiedzieć wszystkiego z góry, pisz tyle, ile wiesz.
 
-## Szablon zgłoszenia
+## Przykład
 
-Skopiuj tę sekcję do "Aktualne zgłoszenie" poniżej i uzupełnij dla każdego nowego zadania.
+> **Co chcę:** Jak gracz zbierze 100 monet w grze, chcę żeby dostał specjalną rangę "VIP",
+> którą będzie widać też u nas na stronie/w panelu, nie tylko w samej grze.
+>
+> **Po co:** Graczom bardziej się chce grać, jak coś "liczy się" też poza grą.
+>
+> **Skąd będę wiedział, że działa:** Zbieram 100 monet w grze testowej i po chwili widzę
+> status VIP w naszym panelu.
+>
+> **Czego nie wolno zepsuć:** Reszta gry ma działać dokładnie tak jak teraz.
 
-### Tytuł
+To wystarczy jako przykład dobrego opisu — Twój nie musi być dłuższy.
 
-Jedno zdanie streszczające zgłoszenie (posłuży też jako punkt wyjścia do nazwy gałęzi/PR-a).
+## Pytania, które mogą pomóc (żadne nie jest obowiązkowe)
 
-### Kontekst biznesowy
-
-- **Co** ma się wydarzyć — funkcja, poprawka albo zmiana zachowania, opisana z punktu widzenia
-  użytkownika/biznesu, nie implementacji.
-  _Przykład: "Gracz, który zbierze 100 punktów w grze, ma dostać rangę VIP widoczną też poza
-  grą."_
-- **Po co** — jaki problem to rozwiązuje albo jaką potrzebę zaspokaja, i dla kogo (gracze?
-  administratorzy gry? wy jako zespół operacyjny?).
-- **Jak wygląda sukces** — po czym poznamy, że jest zrobione.
-  _Przykład: "Administrator widzi status VIP w naszym dashboardzie w ciągu kilku sekund od
-  zdarzenia w grze."_
-
-### Obszar zmiany
-
-Zaznacz, co pasuje — pomaga to od razu wiedzieć, w której warstwie/kontekście to wyląduje:
-
-- [ ] Komunikacja wychodząca do Roblox (Open Cloud API — dane użytkownika, publikacja miejsca, ...)
-- [ ] Komunikacja przychodząca z Roblox (webhook wysyłany ze skryptu w grze)
-- [ ] Publikacja gry (pipeline `game/` → Roblox przez Open Cloud)
-- [ ] Skrypt w grze (`game/src/**`)
-- [ ] Coś nowego / inny obszar — opisz krótko czego dotyczy
-
-### Szczegóły techniczne (jeśli już wiadomo — nieobowiązkowe)
-
-- Konkretne dane wejściowe/wyjściowe: jakie pola, z jakiego zdarzenia w grze, do/z jakiego
-  endpointu Open Cloud.
-- Istniejące elementy do zmiany lub rozbudowy, jeśli już wiadomo które (np. konkretny use case,
-  router, adapter).
-- Czy potrzebne są nowe uprawnienia/sekrety (np. dodatkowy scope na kluczu Open Cloud), których
-  jeszcze nie ma w `.env` / GitHub Secrets.
-
-### Ograniczenia
-
-- Terminy, jeśli są.
-- Rzeczy, których nie wolno zepsuć (np. istniejące endpointy, kompatybilność z czymś innym).
-- Konieczność integracji z czymś konkretnym poza tym repo.
-
-### Priorytet
-
-Pilne / normalne / można poczekać — i krótko dlaczego.
-
-### Poza zakresem
-
-Co świadomie **nie** wchodzi w to zgłoszenie, żeby zakres nie rozjechał się bez pytania.
-
-### Otwarte pytania
-
-Rzeczy, co do których sami nie macie jeszcze pewności. Claude i tak zapyta o niejasności, ale
-warto od razu spisać to, co już wiadomo że wymaga ustalenia.
+- **Co ma się stać?** Opisz normalnie, co gra albo serwer ma zrobić.
+- **Po co to robisz?** Co to da graczom albo Tobie?
+- **Skąd będziesz wiedział/a, że jest zrobione?** Co dokładnie sprawdzisz, żeby powiedzieć
+  "działa"?
+- **Czego to dotyczy** — czegoś co dzieje się **w samej grze** (skrypt w Roblox Studio), czegoś
+  co dzieje się **poza grą** (serwer, do którego gra się łączy), czy **obu naraz**? Jeśli nie
+  wiesz, nie szkodzi — Claude to ogarnie.
+- **Czy jest coś, czego na pewno nie wolno zepsuć?** Coś, co już działa i ma dalej działać.
+- **Jest jakiś termin?** Kiedy to jest potrzebne.
+- **Czy jest coś, co świadomie zostawiamy na później** i nie wchodzi w to zadanie?
+- **Czego sam/a jeszcze nie jesteś pewien/pewna?** Spisz to, co Cię zastanawia — Claude i tak
+  zapyta, ale dobrze mieć to od razu zapisane.
 
 ---
 
-## Aktualne zgłoszenie
+## Moje zadanie
 
-_(wklej szablon powyżej i uzupełnij dla następnego zadania)_
+_(napisz tutaj, co chcesz — możesz wzorować się na przykładzie albo na pytaniach powyżej)_
+
+---
+
+*Ciekawostka dla dociekliwych: dokładne zasady, jak zbudowany jest ten projekt od środka, są
+opisane w `CLAUDE.md` — ale nie musisz tego czytać, żeby napisać, co chcesz zrobić.*
