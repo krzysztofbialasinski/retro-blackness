@@ -26,4 +26,8 @@ export type PlacePublisherPort = {
 	) -> PublishPlaceResult,
 }
 
+export type SignatureVerifierPort = {
+	verify: (body: string, signature: string) -> boolean,
+}
+
 return ports

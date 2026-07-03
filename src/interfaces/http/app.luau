@@ -11,23 +11,30 @@ local app = {}
 
 local jsonHeaders = { ["content-type"] = "application/json" }
 
+local function respond(status: number, json: any?)
+	return {
+		status = status,
+		headers = jsonHeaders,
+		body = if json ~= nil then serde.encode("json", json) else "",
+	}
+end
+
 function app.handler(routes: { httpRouter.Route }): (request: any) -> any
 	return function(request: any)
 		local match = httpRouter.match(routes, request.method, request.path)
 		if match == nil then
-			return {
-				status = 404,
-				headers = jsonHeaders,
-				body = serde.encode("json", { detail = "not found" }),
-			}
+			return respond(404, { detail = "not found" })
 		end
 
-		local result = match.route.handle(request, match.params)
-		return {
-			status = result.status,
-			headers = jsonHeaders,
-			body = if result.json ~= nil then serde.encode("json", result.json) else "",
-		}
+		-- Routers translate their own known domain errors into HTTP statuses; this is the
+		-- last-resort boundary for anything else, so a single bad request always gets the
+		-- same JSON error shape as every other response instead of Lune's plaintext default.
+		local ok, result = pcall(match.route.handle, request, match.params)
+		if not ok then
+			return respond(500, { detail = "internal server error" })
+		end
+
+		return respond(result.status, result.json)
 	end
 end
 

@@ -7,11 +7,9 @@
 
 local serde = require("@lune/serde")
 
-local signatureVerifier = {}
+local ports = require("../../application/roblox/ports")
 
-export type SignatureVerifier = {
-	verify: (body: string, signature: string) -> boolean,
-}
+local signatureVerifier = {}
 
 local function constantTimeEquals(a: string, b: string): boolean
 	if #a ~= #b then
@@ -24,7 +22,7 @@ local function constantTimeEquals(a: string, b: string): boolean
 	return diff == 0
 end
 
-function signatureVerifier.new(secret: string): SignatureVerifier
+function signatureVerifier.new(secret: string): ports.SignatureVerifierPort
 	local function verify(body: string, signature: string): boolean
 		if signature == "" then
 			return false
