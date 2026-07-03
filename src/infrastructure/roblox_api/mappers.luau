@@ -7,14 +7,14 @@ local valueObjects = require("../../domain/roblox/value_objects")
 local mappers = {}
 
 export type OpenCloudUserPayload = {
-	id: number,
+	id: string,
 	name: string,
 	displayName: string?,
 }
 
 function mappers.userFromOpenCloudPayload(payload: OpenCloudUserPayload): entities.RobloxUser
 	return entities.robloxUser(
-		valueObjects.robloxUserId(payload.id),
+		valueObjects.robloxUserId(tonumber(payload.id) :: number),
 		payload.name,
 		payload.displayName or payload.name
 	)
