@@ -20,7 +20,7 @@ function openCloudClient.new(baseUrl: string, apiKey: string): ports.RobloxApiCl
 
 	local function getUser(userId: valueObjects.RobloxUserId): entities.RobloxUser
 		local requestParams: net.FetchParams = {
-			url = `{trimmedBase}/users/v1/users/{userId.value}`,
+			url = `{trimmedBase}/cloud/v2/users/{userId.value}`,
 			method = "GET",
 			headers = headers,
 		}
