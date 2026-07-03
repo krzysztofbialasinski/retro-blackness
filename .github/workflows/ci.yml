@@ -38,6 +38,9 @@ jobs:
       - name: File length (max 500 LOC)
         run: lune run scripts/check_file_length.luau
 
+      - name: Architecture boundaries (inward-only dependency rule)
+        run: lune run scripts/check_architecture_boundaries.luau
+
       - name: Tests (full regression suite)
         run: lune run scripts/run_tests.luau
 

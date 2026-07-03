@@ -10,5 +10,6 @@ selene src tests scripts
 luau-lsp analyze --platform=standard src tests scripts
 lune run scripts/check_file_length.luau
 lune run scripts/check_complexity.luau
+lune run scripts/check_architecture_boundaries.luau
 lune run scripts/run_tests.luau
 lune run scripts/check_coverage.luau

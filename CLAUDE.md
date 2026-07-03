@@ -62,10 +62,17 @@ the same way rather than growing an existing one.
    remove the gate.
 3. **`domain/` never requires `application/`, `infrastructure/`, or `interfaces/`.**
    `application/` never requires `infrastructure/` or `interfaces/`. `domain/` and `application/`
-   stay free of `@lune/*`.
+   stay free of `@lune/*`. Enforced by `scripts/check_architecture_boundaries.luau` (CI + local
+   hook) — a static, path-based check of `require(...)` targets, no automated linter can express
+   this for Luau.
 4. All outbound dependencies (HTTP, storage, queues) go through a port in
    `application/<context>/ports.luau` with a concrete adapter in `infrastructure/`. Never call
-   `@lune/net` etc. directly from `application/` or `interfaces/`.
+   `@lune/net` etc. directly from `application/` or `interfaces/`. **Every infrastructure
+   adapter's constructor returns its port type**, never a type of its own (e.g.
+   `signatureVerifier.new(secret): ports.SignatureVerifierPort`, not a locally-declared
+   `SignatureVerifier` type) — this is what lets `interfaces/`/`application/` code depend on the
+   port without ever requiring the concrete adapter module. Not automated (would need
+   per-adapter special-casing for the composition root); check for it in review.
 5. Business rules and validation live in `domain/` or `application/`, never in routers or adapters.
 6. Every module is `--!strict` and passes `luau-lsp analyze --platform=standard`.
 7. New behavior needs a test at the right level (see Testing).
@@ -105,6 +112,9 @@ the same way rather than growing an existing one.
 
 ## Working agreement with Claude
 
+- **Describe new work in [`project_description.md`](project_description.md).** That file is the
+  intake point for plain-language, business-facing requests — what you want and why, not
+  technical detail. Claude turns it into an implementation plan per the rule below.
 - **Plan first, code second.** For anything beyond a trivial one-line fix, present an
   implementation plan (scope, files, approach, trade-offs) and wait for explicit approval before
   writing code. Plain-language descriptions of the desired behavior/bug are sufficient input.
@@ -134,6 +144,7 @@ lune run scripts/run_tests.luau        # full regression suite (unit + integrati
 lune run scripts/check_coverage.luau   # coverage gate (>= 80% over domain + application)
 lune run scripts/check_complexity.luau # complexity gate (<= 10, heuristic)
 lune run scripts/check_file_length.luau# file length gate (<= 500)
+lune run scripts/check_architecture_boundaries.luau  # inward-only dependency rule (hard rule #3)
 stylua --check src tests scripts       # format check   (stylua src tests scripts to fix)
 selene src tests scripts               # lint
 luau-lsp analyze --platform=standard src tests scripts   # strict type check
