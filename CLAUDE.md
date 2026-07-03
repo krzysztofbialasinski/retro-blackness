@@ -106,8 +106,15 @@ the same way rather than growing an existing one.
   3. Implement; keep commits scoped.
   4. Run the full local gate (see Commands) — all green before opening a PR.
   5. Push and open a PR against `main`.
-- **After a PR is merged, sync local `main`:** `git checkout main && git pull --ff-only origin main`,
-  then delete the merged branch.
+- **Leave it clean: work is not "done" until it is merged into `main` and the branch is gone.**
+  When a piece of work is finished, its PR gets merged into `main` — finished work must never sit
+  indefinitely on an unmerged branch. Immediately after the merge:
+  1. `git checkout main && git pull --ff-only origin main`
+  2. Delete the merged branch locally (`git branch -d <slug>`) and on the remote
+     (`git push origin --delete <slug>`).
+  3. Verify order: `git branch --no-merged main` must list only branches with genuinely
+     in-flight work — anything else is a leftover to merge or delete.
+- Never stack new work on an unmerged branch — always branch from a freshly pulled `main`.
 - Do not force-push to `main`. Do not merge a PR with failing CI.
 
 ## Working agreement with Claude
