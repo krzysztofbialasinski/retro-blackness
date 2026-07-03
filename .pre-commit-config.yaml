@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: no-direct-main-commit
+        name: Block direct commits to main
+        entry: bash scripts/check_no_main_commit.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: check-file-length
+        name: Enforce max 500 LOC per file
+        entry: python scripts/check_file_length.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: mypy
+        name: mypy
+        entry: mypy src
+        language: system
+        pass_filenames: false
+        always_run: true
