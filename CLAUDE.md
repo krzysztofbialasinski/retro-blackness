@@ -106,6 +106,11 @@ the same way rather than growing an existing one.
   3. Implement; keep commits scoped.
   4. Run the full local gate (see Commands) — all green before opening a PR.
   5. Push and open a PR against `main`.
+  6. When CI is green, merge the PR and clean up (next two bullets).
+- **Claude owns the whole PR lifecycle, end to end.** Opening the PR, watching CI, merging once
+  green, syncing `main`, and deleting merged branches are all Claude's job by default — never
+  stop halfway and leave merging or cleanup to the user, unless they explicitly ask to take over
+  a given step.
 - **Leave it clean: work is not "done" until it is merged into `main` and the branch is gone.**
   When a piece of work is finished, its PR gets merged into `main` — finished work must never sit
   indefinitely on an unmerged branch. Immediately after the merge:
