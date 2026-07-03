@@ -12,27 +12,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Install Rokit
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
+          echo "$HOME/.rokit/bin" >> "$GITHUB_PATH"
 
-      - name: Install dependencies
-        run: python -m pip install -e ".[dev]"
+      - name: Install pinned tools
+        run: rokit install --no-trust-check
 
-      - name: Lint (ruff)
-        run: ruff check .
+      - name: Generate Lune type definitions
+        run: lune setup
 
-      - name: Format check (ruff)
-        run: ruff format --check .
+      - name: Format check (stylua)
+        run: stylua --check src tests scripts
 
-      - name: Type check (mypy)
-        run: mypy src
+      - name: Lint (selene)
+        run: selene src tests scripts
+
+      - name: Type check (luau-lsp, strict)
+        run: luau-lsp analyze --platform=standard src tests scripts
 
       - name: Cyclomatic complexity (max 10)
-        run: ruff check --select C90 src tests
+        run: lune run scripts/check_complexity.luau
 
       - name: File length (max 500 LOC)
-        run: python scripts/check_file_length.py
+        run: lune run scripts/check_file_length.luau
 
-      - name: Full regression suite + coverage gate (min 80%)
-        run: pytest
+      - name: Tests (full regression suite)
+        run: lune run scripts/run_tests.luau
+
+      - name: Coverage gate (min 80%)
+        run: lune run scripts/check_coverage.luau
+
+      - name: Build place (rojo)
+        run: rojo build game/default.project.json -o build.rbxlx

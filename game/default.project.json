@@ -1,0 +1,12 @@
+{
+  "name": "retro-blackness",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "RetroBlackness": {
+        "$path": "src"
+      }
+    }
+  }
+}

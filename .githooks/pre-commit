@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Local pre-commit gate. Enable once per clone with:
+#   git config core.hooksPath .githooks
+# Requires the pinned Luau toolchain on PATH (rokit install; ~/.rokit/bin).
+set -euo pipefail
+
+bash scripts/check_no_main_commit.sh
+stylua --check src tests scripts
+selene src tests scripts
+luau-lsp analyze --platform=standard src tests scripts
+lune run scripts/check_file_length.luau
+lune run scripts/check_complexity.luau
+lune run scripts/run_tests.luau
+lune run scripts/check_coverage.luau

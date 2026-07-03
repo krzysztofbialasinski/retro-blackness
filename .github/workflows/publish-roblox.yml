@@ -1,0 +1,33 @@
+name: Publish to Roblox
+
+# Publishes the in-game Luau (game/) to a Roblox experience via Open Cloud.
+# Triggered manually or on a published GitHub release — deliberately NOT on every push,
+# to avoid accidental publishes.
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rokit
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
+          echo "$HOME/.rokit/bin" >> "$GITHUB_PATH"
+
+      - name: Install pinned tools
+        run: rokit install --no-trust-check
+
+      - name: Build place (rojo)
+        run: rojo build game/default.project.json -o build.rbxlx
+
+      - name: Publish to Roblox (Open Cloud)
+        env:
+          RB_ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.RB_ROBLOX_OPEN_CLOUD_API_KEY }}
+          RB_UNIVERSE_ID: ${{ secrets.RB_UNIVERSE_ID }}
+          RB_PLACE_ID: ${{ secrets.RB_PLACE_ID }}
+        run: lune run scripts/publish -- build.rbxlx
